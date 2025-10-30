@@ -1,16 +1,13 @@
 import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
 
-// Store original fetch
 const originalFetch = global.fetch;
 
 describe('User Validation Tests', () => {
   beforeEach(() => {
-    // Mock fetch before each test
     global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
   });
 
   afterEach(() => {
-    // Restore original fetch
     global.fetch = originalFetch;
     jest.clearAllMocks();
   });
@@ -25,21 +22,15 @@ describe('User Validation Tests', () => {
         json: async () => ({ message: 'Valid name' }),
       } as Response);
 
-      // Test with curly quote
-      const testName = "Luc O'Connor"; // This has a curly quote
+      const testName = "Luc O'Connor";
       
-      // We need to test that the URL contains the normalized version
-      // Import after mocking to avoid module execution issues
       const validateUser = (await import('./server')).validateUser;
       
       await validateUser(testName);
       
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const calledUrl = mockFetch.mock.calls[0][0] as string;
-      
-      // The URL should contain the straight apostrophe, not curly
       expect(calledUrl).toContain('name=');
-      // Verify it's been encoded
       expect(calledUrl).toMatch(/name=Luc%20O%27Connor/);
     });
 
@@ -106,11 +97,11 @@ describe('User Validation Tests', () => {
 
       const validateUser = (await import('./server')).validateUser;
       
-      const nameWithLeftQuote = "Sara O'Malley"; // U+2018
+      const nameWithLeftQuote = "Sara O'Malley"; 
       await validateUser(nameWithLeftQuote);
       
       const calledUrl = mockFetch.mock.calls[0][0] as string;
-      expect(calledUrl).toContain("O%27"); // %27 is encoded straight apostrophe
+      expect(calledUrl).toContain("O%27"); 
     });
 
     test('should convert right single quote (U+2019) to straight apostrophe', async () => {
@@ -124,11 +115,11 @@ describe('User Validation Tests', () => {
 
       const validateUser = (await import('./server')).validateUser;
       
-      const nameWithRightQuote = "Renee O'Connor"; // U+2019
+      const nameWithRightQuote = "Renee O'Connor";
       await validateUser(nameWithRightQuote);
       
       const calledUrl = mockFetch.mock.calls[0][0] as string;
-      expect(calledUrl).toContain("O%27"); // %27 is encoded straight apostrophe
+      expect(calledUrl).toContain("O%27");
     });
   });
 

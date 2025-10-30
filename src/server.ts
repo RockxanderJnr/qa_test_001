@@ -69,7 +69,11 @@ async function loadUsers(): Promise<string[]> {
 }
 
 async function validateUser(name: string): Promise<void> {
-  const url = `${VALIDATION_URL}?name=${encodeURIComponent(name)}`;
+  const normalizedName = name
+    .replace(/[\u2018\u2019]/g, "'") 
+    .replace(/[\u201C\u201D]/g, '"'); 
+  
+  const url = `${VALIDATION_URL}?name=${encodeURIComponent(normalizedName)}`;
 
   let response: Response;
 
@@ -97,7 +101,6 @@ async function extractMessage(response: Response): Promise<string> {
       return payload.message;
     }
   } catch (_error) {
-    // Ignore JSON parse errors, they are handled below.
   }
 
   return `Received status ${response.status}`;

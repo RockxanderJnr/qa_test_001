@@ -103,4 +103,4 @@ async function extractMessage(response: Response): Promise<string> {
   return `Received status ${response.status}`;
 }
 
-export {};
+export { validateUser, loadUsers };
